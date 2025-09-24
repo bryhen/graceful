@@ -17,44 +17,45 @@ type ExitReason struct {
 	ErrsShutdown []error
 }
 
-type exitPrint struct {
+type ExitReasonPrintable struct {
 	OsSignal     string   `json:"osSignal"`
 	ErrStartup   string   `json:"errStartup"`
 	ErrRuntime   string   `json:"errRuntime"`
 	ErrsShutdown []string `json:"errsShutdown"`
 }
 
-func (er *ExitReason) toPrint() *exitPrint {
-	ep := &exitPrint{}
+func (er *ExitReason) ToPrintable() *ExitReasonPrintable {
+	erp := &ExitReasonPrintable{}
+
 	if er.OsSignal != nil {
-		ep.OsSignal = er.OsSignal.String()
+		erp.OsSignal = er.OsSignal.String()
 	}
 
 	if er.ErrStartup != nil {
-		ep.ErrStartup = er.ErrStartup.Error()
+		erp.ErrStartup = er.ErrStartup.Error()
 	}
 
 	if er.ErrRuntime != nil {
-		ep.ErrRuntime = er.ErrRuntime.Error()
+		erp.ErrRuntime = er.ErrRuntime.Error()
 	}
 
 	for _, e := range er.ErrsShutdown {
-		ep.ErrsShutdown = append(ep.ErrsShutdown, e.Error())
+		erp.ErrsShutdown = append(erp.ErrsShutdown, e.Error())
 	}
 
-	return ep
+	return erp
 }
 
 // Marshals the struct.
 func (er *ExitReason) MarshalStr() string {
-	bs, _ := json.Marshal(er.toPrint())
+	bs, _ := json.Marshal(er.ToPrintable())
 	return string(bs)
 }
 
 // Marshals the struct with indents.
 // prefix is usually "" and indent is usually "\t"
 func (er *ExitReason) MarshalIndentStr(prefix string, indent string) string {
-	bs, _ := json.MarshalIndent(er.toPrint(), prefix, indent)
+	bs, _ := json.MarshalIndent(er.ToPrintable(), prefix, indent)
 	return string(bs)
 }
 
